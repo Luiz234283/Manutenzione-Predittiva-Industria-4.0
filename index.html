@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Corso 9: Manutenzione Predittiva – Industria 4.0 | Dispensa Interattiva ITIS</title>
+  <meta name="description" content="Nell'era della manifattura intelligente, la manutenzione preventiva e predittiva 4.0 ridefinisce la gestione degli impianti industriali. Integrando tecnologie smart, permette di anticipare i guasti, azzerare i fermi non programmati e massimizzare la continuità operativa in totale sicurezza." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #111827;
+      --bg-card: #161f33;
+      --bg-card-hover: #1d2842;
+      --bg-input: #0d1322;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: rgba(148, 163, 184, 0.16);
+      --accent-cyan: #06b6d4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.18);
+      --accent-violet: #a855f7;
+      --accent-violet-glow: rgba(168, 85, 247, 0.18);
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.55);
+      --nav-bg: rgba(9, 13, 22, 0.86);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --bg-input: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --border-color: rgba(15, 23, 42, 0.12);
+      --accent-cyan: #0284c7;
+      --accent-cyan-glow: rgba(2, 132, 199, 0.12);
+      --accent-violet: #7c3aed;
+      --accent-violet-glow: rgba(124, 58, 237, 0.12);
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --shadow-card: 0 8px 24px -8px rgba(15, 23, 42, 0.1);
+      --nav-bg: rgba(248, 250, 252, 0.9);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Progress bar */
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
+      z-index: 1001;
+      transition: width 0.1s linear;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .topbar-inner {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      letter-spacing: 0.04em;
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-pill:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 3px var(--accent-cyan-glow);
+    }
+
+    /* Hero Banner */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 4.5rem 1.5rem 3.8rem;
+      background:
+        radial-gradient(circle at 15% 20%, var(--accent-cyan-glow), transparent 42%),
+        radial-gradient(circle at 85% 30%, var(--accent-violet-glow), transparent 45%),
+        var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      background: var(--accent-cyan-glow);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 4.2vw, 3.25rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      background: linear-gradient(120deg, var(--text-primary) 35%, var(--accent-cyan) 75%, var(--accent-violet) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+      color: var(--text-secondary);
+      max-width: 820px;
+      margin-bottom: 1.75rem;
+      font-weight: 400;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .reference-quote {
+      background: var(--bg-card);
+      border-left: 4px solid var(--accent-cyan);
+      border-top: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      border-radius: 0 14px 14px 0;
+      padding: 1.4rem 1.75rem;
+      box-shadow: var(--shadow-card);
+      max-width: 960px;
+    }
+    .reference-quote-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.45rem;
+      display: block;
+    }
+    .reference-quote blockquote {
+      font-style: italic;
+      color: var(--text-primary);
+      font-size: 1.02rem;
+      line-height: 1.65;
+    }
+
+    /* Main Layout with Sticky TOC */
+    .layout-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 4.6rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+    }
+    .sidebar-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+      padding-left: 0.5rem;
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .toc-list a {
+      display: block;
+      padding: 0.45rem 0.65rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      font-weight: 500;
+      line-height: 1.35;
+      border-left: 2px solid transparent;
+      transition: all 0.18s ease;
+    }
+    .toc-list a:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    .toc-list a.active {
+      background: var(--accent-cyan-glow);
+      color: var(--accent-cyan);
+      border-left-color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    /* Content Sections */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow-card);
+      scroll-margin-top: 5.2rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.85rem;
+      margin-bottom: 1.4rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+      padding: 0.25rem 0.65rem;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text-primary);
+    }
+    h3 {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin: 1.85rem 0 0.75rem;
+    }
+    h3:first-of-type { margin-top: 0.5rem; }
+    p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+    strong { color: var(--text-primary); font-weight: 600; }
+
+    /* Lists */
+    ul.styled-list, ol.styled-list {
+      margin: 0.75rem 0 1.25rem 1.35rem;
+      color: var(--text-secondary);
+    }
+    ul.styled-list li, ol.styled-list li {
+      margin-bottom: 0.6rem;
+      padding-left: 0.25rem;
+    }
+    ul.styled-list li::marker { color: var(--accent-cyan); }
+    ol.styled-list li::marker { color: var(--accent-violet); font-weight: 700; }
+
+    /* Grid Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .mini-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-top: 3px solid var(--accent-cyan);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .mini-card.violet { border-top-color: var(--accent-violet); }
+    .mini-card.emerald { border-top-color: var(--accent-emerald); }
+    .mini-card.amber { border-top-color: var(--accent-amber); }
+    .mini-card h4 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    .mini-card p { font-size: 0.93rem; margin-bottom: 0; }
+
+    /* Callouts */
+    .callout {
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.35rem 0;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+    }
+    .callout.cyan {
+      border-left: 4px solid var(--accent-cyan);
+      background: linear-gradient(90deg, var(--accent-cyan-glow), transparent 65%), var(--bg-secondary);
+    }
+    .callout.violet {
+      border-left: 4px solid var(--accent-violet);
+      background: linear-gradient(90deg, var(--accent-violet-glow), transparent 65%), var(--bg-secondary);
+    }
+    .callout.amber {
+      border-left: 4px solid var(--accent-amber);
+    }
+    .callout-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text-primary);
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .callout p:last-child { margin-bottom: 0; }
+
+    /* Formulas */
+    .formula-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-violet);
+      border-radius: 12px;
+      padding: 1rem 1.35rem;
+      margin: 1rem 0;
+      font-size: 1.05rem;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 1.35rem 0;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      text-align: left;
+    }
+    thead {
+      background: linear-gradient(90deg, rgba(6, 182, 212, 0.16), rgba(168, 85, 247, 0.16));
+    }
+    th {
+      padding: 0.9rem 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    td {
+      padding: 0.85rem 1rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-card-hover); }
+    .table-caption {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    /* Figures */
+    figure.tech-figure {
+      margin: 1.65rem 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+    }
+    figure.tech-figure img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      cursor: zoom-in;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: #ffffff;
+    }
+    figure.tech-figure img:hover {
+      transform: scale(1.01);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    }
+    figure.tech-figure figcaption {
+      margin-top: 0.8rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      text-align: left;
+      padding: 0 0.35rem;
+    }
+    .zoom-hint {
+      display: inline-block;
+      margin-top: 0.45rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+    }
+
+    /* Interactive Widgets */
+    .interactive-lab {
+      margin: 1.75rem 0;
+      background: var(--bg-secondary);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.12);
+    }
+    .lab-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .lab-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      background: var(--accent-cyan-glow);
+      color: var(--accent-cyan);
+    }
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.1rem;
+      margin-bottom: 1.15rem;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+    .control-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+    .control-group input[type="number"] {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+    }
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.85rem;
+    }
+    .kpi-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      text-align: center;
+    }
+    .kpi-box .kpi-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+    .kpi-box .kpi-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+    .kpi-box .kpi-val.warn { color: var(--accent-amber); }
+    .kpi-box .kpi-val.danger { color: var(--accent-rose); }
+    .kpi-box .kpi-val.ok { color: var(--accent-emerald); }
+
+    /* Glossary Search & Cards */
+    .glossary-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .glossary-search {
+      flex: 1 1 260px;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 0.94rem;
+    }
+    .glossary-search:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .filter-pill {
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .filter-pill.active, .filter-pill:hover {
+      background: var(--accent-cyan);
+      color: #ffffff;
+      border-color: var(--accent-cyan);
+    }
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .gloss-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .gloss-term {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent-cyan);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .gloss-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: var(--accent-violet-glow);
+      color: var(--accent-violet);
+    }
+    .gloss-full {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .gloss-desc {
+      font-size: 0.87rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .gloss-note {
+      margin-top: 0.35rem;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.65rem;
+      border-radius: 8px;
+      background: var(--bg-input);
+      color: var(--text-muted);
+      border-left: 3px solid var(--accent-amber);
+    }
+
+    /* External Links */
+    a.ext-link {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px dashed var(--accent-cyan);
+    }
+    a.ext-link:hover { opacity: 0.85; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      padding: 2.25rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    /* Lightbox Modal */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(5, 8, 15, 0.92);
+      backdrop-filter: blur(6px);
+      padding: 1.5rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 94vw;
+      max-height: 80vh;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+    .lightbox-caption {
+      color: #e2e8f0;
+      margin-top: 0.9rem;
+      max-width: 820px;
+      text-align: center;
+      font-size: 0.92rem;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.5rem;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 0.45rem 0.95rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 980px) {
+      .layout-container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        max-height: none;
+      }
+      .section-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#top" class="brand">
+        <span class="brand-badge">CORSO 9</span>
+        <span>Manutenzione Predittiva – Industria 4.0</span>
+      </a>
+      <div class="topbar-actions">
+        <a href="#glossario" class="btn-pill">📖 Glossario (43)</a>
+        <a href="https://luigipelagagge-oss.github.io/Reti-LAN-WAN-PAN/" target="_blank" rel="noopener" class="btn-pill">🌐 Dispensa Reti</a>
+        <button id="theme-toggle" class="btn-pill" type="button" aria-label="Cambia tema colore">☀️ Tema Aula</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="top" class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Dispensa Didattica ITIS • Indirizzo Industriale e Meccatronico</div>
+      <h1>Manutenzione Predittiva e Preventiva 4.0</h1>
+      <p class="hero-subtitle">Strategie manutentive, sistemi CMMS/MES e ruolo dell'indicatore OEE nell'Industria 4.0</p>
+      <div class="hero-meta">
+        <span>👨‍🏫 <strong>Docente:</strong> Prof. Luigi Pelagagge</span>
+        <span>📅 <strong>Edizione:</strong> Novembre 2026</span>
+        <span>🏭 <strong>Standard:</strong> UNI EN 13306 • ISA-95 • ISO/OSI</span>
+      </div>
+      <div class="reference-quote">
+        <span class="reference-quote-label">Testo di riferimento</span>
+        <blockquote>
+          «Nell'era dell'Industria 4.0, l'ottimizzazione dei processi produttivi passa attraverso l'adozione di strategie di manutenzione avanzate. La manutenzione predittiva e preventiva 4.0 rappresenta un'evoluzione fondamentale, in quanto combina tecnologie intelligenti per ridurre i guasti, migliorare l'efficienza e ridurre i costi operativi. Questo approccio rivoluziona la gestione delle macchine industriali per permettere alle aziende di mantenere elevati livelli di produttività e sicurezza.»
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <div class="layout-container">
+    <!-- Sticky Sidebar TOC -->
+    <aside class="sidebar" aria-label="Indice dei contenuti">
+      <div class="sidebar-title">Indice del Modulo</div>
+      <ul class="toc-list" id="toc-list">
+        <li><a href="#sec-1">1. Analisi del testo introduttivo</a></li>
+        <li><a href="#sec-2">2. I quattro concetti fondamentali</a></li>
+        <li><a href="#sec-3">3. Ecosistema software: CMMS e MES</a></li>
+        <li><a href="#sec-4">4. Confronto strategie manutentive</a></li>
+        <li><a href="#sec-5">5. Indicatore OEE e filosofia TPM</a></li>
+        <li><a href="#sec-6">6. Affidabilità: MTBF, MTTR e TTR</a></li>
+        <li><a href="#sec-7">7. Reti IIoT: ISO/OSI, MQTT e OPC UA</a></li>
+        <li><a href="#glossario">8. Glossario acronimi e curiosità</a></li>
+        <li><a href="#sec-9">9. Sitografia e riferimenti culturali</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content-area">
+
+      <!-- SEZIONE 1 -->
+      <section id="sec-1" class="section-card">
+        <div class="section-header">
+          <span class="section-num">01</span>
+          <h2>Analisi commentata del testo introduttivo</h2>
+        </div>
+        <p>Il brano introduttivo sintetizza il cambio di paradigma avvenuto nelle fabbriche moderne: la manutenzione non è più considerata un semplice <em>«costo necessario per riparare ciò che si rompe»</em>, bensì una <strong>leva strategica fondamentale per la competitività aziendale</strong>.</p>
+        <p>Scomponendo i concetti chiave del testo in chiave tecnica per gli studenti di indirizzo industriale e meccatronico:</p>
+        <div class="grid-2">
+          <div class="mini-card">
+            <h4>«Ottimizzazione dei processi produttivi»</h4>
+            <p>In uno stabilimento industriale, ogni minuto di fermo macchina non programmato (<em>downtime</em>) comporta una perdita diretta di produzione. Ottimizzare significa massimizzare l'efficienza globale degli impianti, misurata tramite l'indicatore <strong>OEE (Overall Equipment Effectiveness)</strong>, approfondito nella Sezione 5.</p>
+          </div>
+          <div class="mini-card violet">
+            <h4>«Combina tecnologie intelligenti»</h4>
+            <p>Le macchine industriali non operano più come isole autonome, ma sono interconnesse. Sensori, <strong>PLC</strong> (controllori logici programmabili), sistemi di supervisione e algoritmi di analisi trasformano i dati grezzi della macchina in informazioni operative per decidere quando e come intervenire.</p>
+          </div>
+          <div class="mini-card emerald">
+            <h4>«Ridurre i guasti, migliorare l'efficienza e ridurre i costi operativi»</h4>
+            <p>Intervenire in modo mirato consente di evitare sia i danni catastrofici causati da rotture improvvise, sia gli sprechi economici legati alla sostituzione prematura di componenti ancora pienamente funzionanti.</p>
+          </div>
+          <div class="mini-card amber">
+            <h4>«Produttività e sicurezza»</h4>
+            <p>Un impianto monitorato e mantenuto in condizioni ottimali non solo garantisce continuità produttiva e qualità del prodotto finito, ma abbassa drasticamente il rischio di infortuni per gli operatori dovuti a cedimenti meccanici o malfunzionamenti elettrici.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEZIONE 2 -->
+      <section id="sec-2" class="section-card">
+        <div class="section-header">
+          <span class="section-num">02</span>
+          <h2>I quattro concetti fondamentali della manutenzione</h2>
+        </div>
+        <p>Per comprendere appieno il significato del brano, è indispensabile distinguere l'evoluzione storica e tecnologica delle strategie manutentive.</p>
+
+        <h3>2.1 Che cos'è la Manutenzione</h3>
+        <p>Secondo la normativa tecnica di riferimento (<strong>UNI EN 13306</strong>), la manutenzione è la combinazione di tutte le azioni tecniche, amministrative e gestionali, eseguite durante il ciclo di vita di un'entità, destinate a mantenerla o riportarla in uno stato in cui possa eseguire la funzione richiesta.</p>
+        <p>Storicamente, il punto di partenza è la <strong>manutenzione correttiva (o a guasto)</strong>: si attende che il componente si rompa per poi ripararlo o sostituirlo. È un approccio semplice dal punto di vista gestionale, ma estremamente rischioso, poiché provoca fermi impianto improvvisi, costi elevati per ricambi urgenti e potenziali pericoli per la sicurezza.</p>
+
+        <h3>2.2 Perché esistono le norme tecniche, gli enti certificatori e «LE NORME»</h3>
+        <p>Il richiamo alla norma <strong>UNI EN 13306</strong> offre l'occasione per chiarire un principio cardine dell'ingegneria industriale: perché esistono gli standard tecnici?</p>
+        <div class="callout amber">
+          <div class="callout-title">⚠️ Il gioco di parole tecnico: «LE NORME» vs «L'ENORME»</div>
+          <p>Nel mondo della tecnica, il confine tra l'ordine produttivo e il caos economico sta tutto in un apostrofo: senza <strong>LE NORME</strong>, l'impatto degli errori di misura, di progettazione e di comunicazione diventa letteralmente <strong>L'ENORME</strong>!</p>
+        </div>
+        <ul class="styled-list">
+          <li><strong>Il campione unico di riferimento ($\text{ísos} = \text{uguale}$):</strong> per evitare che ogni regione o officina utilizzasse unità di misura arbitrarie, venne realizzato a Sèvres un prototipo ufficiale in platino-iridio pari esattamente a $1\text{ m} = 100\text{ cm}$. È proprio da questa esigenza di uguaglianza universale che prende il nome l'ente internazionale <strong>ISO</strong> (dal greco <em>ísos</em>, «uguale»), come sintetizzato nella Figura 1.</li>
+        </ul>
+
+        <figure class="tech-figure">
+          <img src="img/ISOS2_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='ISOS2_2.jpg';}" alt="Perché esistono le norme? Da 'isos' agli enti certificatori" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 1:</strong> Dall'origine greca del termine <em>ísos</em> («uguale») al ruolo degli Enti Certificatori: perché senza LE NORME il danno tecnico ed economico diventa L'ENORME. <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <p>Per comprendere con un esempio numerico la portata concreta di questa affermazione, basta osservare il celebre caso storico del <strong>Metro di Sèvres</strong> illustrato nella Figura 2:</p>
+        <div class="callout cyan">
+          <div class="callout-title">📐 L'effetto di una deviazione dallo standard (Il caso dell'agrimensore)</div>
+          <p>Se un agrimensore misura un terreno di $900\text{ m} \times 300\text{ m}$ con un metro certificato da $100\text{ cm}$, ottiene la superficie reale di $270\,000\text{ m}^2$ (corrispondente, a $1\,000\text{ €/m}^2$, a un valore di <strong>270 milioni di euro</strong>). Se invece un secondo agrimensore utilizza inconsapevolmente un metro difettoso da $95\text{ cm}$, rileverà misure falsate ($947,4\text{ m} \times 315,8\text{ m}$), calcolando una superficie gonfiata di circa $299\,169\text{ m}^2$ ($+29\,169\text{ m}^2$ «fantasma») e generando un danno economico superiore a <strong>29 milioni di euro</strong>!</p>
+        </div>
+
+        <figure class="tech-figure">
+          <img src="img/ISOS_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='ISOS_2.jpg';}" alt="L'importanza degli standard: il caso del Metro di Sèvres" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 2:</strong> L'importanza degli standard tecnici e della taratura certificata: il caso storico del Metro di Sèvres e l'impatto economico delle misure non standardizzate. <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <!-- Interactive Lab 1: Metro di Sèvres -->
+        <div class="interactive-lab">
+          <div class="lab-header">
+            <strong>🧪 Simulatore Interattivo: L'impatto della taratura (Caso Metro di Sèvres)</strong>
+            <span class="lab-badge">Laboratorio Metrologico</span>
+          </div>
+          <p style="font-size:0.88rem;">Modifica la lunghezza reale del regolo usato dall'agrimensore su un terreno reale di $900\text{ m} \times 300\text{ m}$ (valore unitario: $1.000\text{ €/m}^2$):</p>
+          <div class="lab-grid">
+            <div class="control-group">
+              <label for="meter-slider"><span>Lunghezza campione utilizzato</span><span id="meter-val">95.0 cm</span></label>
+              <input type="range" id="meter-slider" min="90" max="105" step="0.5" value="95" />
+            </div>
+          </div>
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="kpi-label">Superficie Reale</div>
+              <div class="kpi-val">270.000 m²</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Superficie Rilevata</div>
+              <div class="kpi-val warn" id="sevres-area">299.169 m²</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Superficie «Fantasma»</div>
+              <div class="kpi-val danger" id="sevres-diff">+29.169 m²</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Impatto Economico</div>
+              <div class="kpi-val danger" id="sevres-cost">+29.169.000 €</div>
+            </div>
+          </div>
+        </div>
+
+        <p>Allo stesso modo, nell'Industria 4.0 e nella manutenzione, occorre distinguere due funzioni complementari che garantiscono l'affidabilità del sistema industriale:</p>
+        <div class="grid-2">
+          <div class="mini-card">
+            <h4>Gli Enti di Normazione (UNI, EN, ISO, ISA)</h4>
+            <p>Elaborano e pubblicano <strong>LE NORME</strong> tecniche consensuali (come la UNI EN 13306 per la terminologia manutentiva o la ISO/OSI per le reti). Esse definiscono un linguaggio comune, regole di sicurezza condivise e criteri univoci affinché sensori, PLC, software e tecnici di aziende e paesi diversi possano dialogare senza ambiguità.</p>
+          </div>
+          <div class="mini-card violet">
+            <h4>Gli Enti Certificatori (Terza Parte Indipendente)</h4>
+            <p>Verificano con audit e prove strumentali che un'azienda, un prodotto, un processo produttivo o uno strumento di misura (come un accelerometro per la manutenzione predittiva) sia effettivamente conforme ai requisiti stabiliti dalle norme, rilasciando una certificazione ufficiale riconosciuta sul mercato.</p>
+          </div>
+        </div>
+
+        <h3>2.3 La Manutenzione Preventiva (Tradizionale)</h3>
+        <p>La manutenzione preventiva nasce per superare la logica dell'intervento a guasto. Consiste nell'eseguire controlli, revisioni o sostituzioni <strong>prima che si verifichi il guasto</strong>, secondo intervalli predeterminati.</p>
+        <ul class="styled-list">
+          <li><strong>Modalità operativa:</strong> si basa su criteri statistici o sulle prescrizioni del costruttore della macchina. Può essere <em>ciclica / a calendario</em> (ad esempio, sostituzione dell'olio lubrificante ogni 6 mesi) oppure <em>a conteggio / utilizzo</em> (ad esempio, sostituzione di una cinghia di trasmissione ogni $5\,000$ ore di funzionamento o ogni $100\,000$ cicli).</li>
+          <li><strong>Limite principale:</strong> basandosi su medie statistiche, non tiene conto delle reali condizioni di lavoro della singola macchina. Si rischia di sostituire un cuscinetto ancora efficiente (spreco di materiale e manodopera), oppure di subire comunque un guasto se l'impianto è stato sottoposto a carichi o stress anomali.</li>
+        </ul>
+
+        <h3>2.4 La Manutenzione Preventiva 4.0</h3>
+        <p>La manutenzione preventiva 4.0 rappresenta la digitalizzazione e l'interconnessione della manutenzione preventiva tradizionale grazie alle tecnologie abilitanti dell'Industria 4.0.</p>
+        <ul class="styled-list">
+          <li><strong>Modalità operativa:</strong> i piani di manutenzione non sono più gestiti su registri cartacei o tabelle statiche, ma tramite software gestionali dedicati (<strong>CMMS</strong> – <em>Computerized Maintenance Management System</em>) collegati direttamente ai PLC delle macchine e ai sistemi di gestione della produzione (<strong>MES</strong>), la cui architettura ed evoluzione storica sono approfondite nella Sezione 3.</li>
+          <li><strong>Innovazioni sul campo:</strong>
+            <ul class="styled-list">
+              <li><em>Aggiornamento dinamico:</em> la macchina comunica in tempo reale le ore effettive di lavoro, i cicli eseguiti e i carichi sopportati; il sistema ricalcola automaticamente le scadenze di intervento.</li>
+              <li><em>Supporto digitale al tecnico:</em> i manutentori ricevono notifiche automatiche su tablet o dispositivi mobili, consultano esplosi meccanici e schemi elettrici in cloud oppure utilizzano la <strong>Realtà Aumentata (AR)</strong> per essere guidati passo dopo passo nelle procedure di smontaggio e taratura, riducendo gli errori umani.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3>2.5 La Manutenzione Predittiva (Predictive Maintenance – PdM)</h3>
+        <p>La manutenzione predittiva costituisce il livello più avanzato: abbandona la programmazione basata su stime statistiche per fondarsi sullo <strong>stato reale e istantaneo di salute della macchina</strong> (evoluzione della <em>Condition-Based Maintenance</em>).</p>
+        <ul class="styled-list">
+          <li><strong>Monitoraggio continuo:</strong> sull'impianto vengono installati sensori <strong>IIoT (Industrial Internet of Things)</strong> che rilevano costantemente parametri fisici critici:
+            <div class="grid-2" style="margin-top:0.75rem;">
+              <div class="mini-card">
+                <h4>Vibrazioni</h4>
+                <p>Tramite accelerometri, per individuare squilibri, disallineamenti o usura precoce di cuscinetti e ingranaggi.</p>
+              </div>
+              <div class="mini-card violet">
+                <h4>Temperatura</h4>
+                <p>Termocoppie o termocamere, per rilevare attriti anomali o surriscaldamenti nei quadri elettrici.</p>
+              </div>
+              <div class="mini-card emerald">
+                <h4>Assorbimento elettrico</h4>
+                <p>Analisi delle correnti dei motori elettrici per individuare anomalie di carico o guasti interni.</p>
+              </div>
+              <div class="mini-card amber">
+                <h4>Ultrasuoni e analisi tribologica</h4>
+                <p>Per individuare micro-perdite pneumatiche o presenza di particelle metalliche nei lubrificanti.</p>
+              </div>
+            </div>
+          </li>
+          <li><strong>Intelligenza Artificiale e Vita Utile Residua:</strong> i flussi di dati raccolti vengono elaborati da algoritmi di <em>Machine Learning</em>. Il sistema apprende la «firma» di funzionamento normale della macchina e intercetta deviazioni microscopiche molto prima che diventino percepibili dall'uomo. In questo modo stima la <strong>RUL (Remaining Useful Life – Vita Utile Residua)</strong> del componente, consentendo di pianificare l'intervento esattamente poco prima che avvenga il guasto.</li>
+        </ul>
+      </section>
+
+      <!-- SEZIONE 3 -->
+      <section id="sec-3" class="section-card">
+        <div class="section-header">
+          <span class="section-num">03</span>
+          <h2>L'ecosistema software di fabbrica: CMMS e MES</h2>
+        </div>
+        <p>Per comprendere come i dati passino dall'officina alle decisioni operative, è necessario conoscere le due principali piattaforme software che governano rispettivamente la manutenzione e la produzione: il <strong>CMMS</strong> e il <strong>MES</strong>.</p>
+
+        <h3>3.1 Che cos'è un CMMS e l'archeologia del prodotto: il caso Gimar</h3>
+        <p>Il <strong>CMMS (Computerized Maintenance Management System)</strong> è il sistema informativo dedicato alla gestione tecnica, organizzativa ed economica dell'intero ciclo di vita degli impianti. Le sue funzioni principali comprendono:</p>
+        <ul class="styled-list">
+          <li><strong>Anagrafica tecnica e gerarchia impianti:</strong> censimento strutturato di stabilimenti, linee, macchine e sottogruppi meccanici/elettrici, associati alla relativa documentazione tecnica e distinta base ricambi.</li>
+          <li><strong>Gestione degli Ordini di Lavoro (OdL):</strong> emissione, assegnazione ai tecnici, consuntivazione delle ore di manodopera e chiusura sia degli interventi a guasto (ticket) sia delle attività programmate.</li>
+          <li><strong>Magazzino ricambi e indicatori di affidabilità:</strong> controllo delle scorte minime dei componenti critici e calcolo automatico dei KPI manutentivi, quali il <strong>MTBF</strong> (<em>Mean Time Between Failures</em> – tempo medio tra due guasti) e il <strong>MTTR</strong> (<em>Mean Time To Repair</em> – tempo medio di riparazione), approfonditi nella Sezione 6.</li>
+        </ul>
+        <div class="callout violet">
+          <div class="callout-title">🏛️ Archeologia dei prodotti: il caso Gimar</div>
+          <p>Per comprendere l'evoluzione di questa classe di software, è utile osservare l'«archeologia» dell'informatica industriale italiana tra gli anni Novanta e Duemila. Un esempio storico rappresentativo della prima generazione di CMMS strutturati è <strong>Gimar</strong>, pacchetto gestionale dedicato alla manutenzione diffuso in numerose realtà manifatturiere italiane. Nati in architetture <em>client-server</em> basate su database relazionali locali (in ambiente PC/Windows aziendale), sistemi come Gimar hanno compiuto il primo salto tecnologico fondamentale: sostituire gli schedari cartacei e i registri di officina con archivi digitali relazionali per codificare macchine, scadenzari periodici e prelievi di ricambi. In quella fase storica, tuttavia, il CMMS operava ancora come un «silo» isolato: i dati di funzionamento delle macchine (ore lavorate o guasti) dovevano essere digitati manualmente a posteriori dagli operatori dell'ufficio manutenzione.</p>
+        </div>
+
+        <h3>3.2 Che cos'è un MES e l'archeologia del prodotto: il caso KM</h3>
+        <p>Il <strong>MES (Manufacturing Execution System)</strong> è il sistema informatico che governa, coordina e monitora in tempo reale l'esecuzione della produzione direttamente in reparto (<em>shop floor</em>).</p>
+        <p>Nella piramide dell'automazione industriale definita dallo standard internazionale <strong>ISA-95</strong>, il MES occupa il <strong>Livello 3</strong>, fungendo da ponte bidirezionale tra:</p>
+        <ul class="styled-list">
+          <li>il livello gestionale aziendale (<strong>ERP – Enterprise Resource Planning, Livello 4</strong>), che gestisce ordini clienti, acquisti e contabilità;</li>
+          <li>il livello di campo e automazione (<strong>PLC, SCADA, CNC e sensoristica, Livelli 0–2</strong>), che controlla fisicamente il movimento e il processo delle macchine.</li>
+        </ul>
+        <p>Il MES riceve dall'ERP gli ordini di produzione, li sequenzia sulle linee, rileva l'avanzamento dei pezzi buoni e degli scarti, registra le causali di fermo macchina e alimenta automaticamente il calcolo dell'OEE.</p>
+        <div class="callout cyan">
+          <div class="callout-title">🏛️ Archeologia dei prodotti: il caso KM</div>
+          <p>Anche sul versante del controllo di reparto, l'archeologia dei prodotti mostra il passaggio graduale dalla carta al digitale. Piattaforme storiche come <strong>KM</strong> (sistemi pionieristici per la raccolta dati di fabbrica e l'avanzamento della produzione diffusi nel tessuto industriale) rappresentano l'anello di congiunzione tra le tradizionali «bolle di lavorazione» cartacee e i moderni MES 4.0. In quella generazione di prodotti, la rilevazione avveniva tramite terminali di reparto dedicati, lettori di codici a barre (<em>barcode</em>) o prime interfacce seriali a bordo macchina: gli operatori dichiaravano inizio e fine fase o causali di fermo, permettendo per la prima volta ai capi reparto di monitorare lo stato delle commesse senza attendere i consuntivi cartacei di fine turno.</p>
+        </div>
+
+        <h3>3.3 L'integrazione 4.0 tra PLC, MES e CMMS</h3>
+        <p>La vera rivoluzione dell'Industria 4.0 non risiede nella singola applicazione, bensì nell'<strong>interconnessione nativa</strong> tra questi livelli tramite protocolli standardizzati (quali <strong>OPC UA</strong> e <strong>MQTT</strong>). Oggi, quando un PLC rileva una deriva termica o il raggiungimento di una soglia critica di cicli, il MES intercetta l'evento e aggiorna istantaneamente gli indicatori di disponibilità e performance; contestualmente, dialoga con il CMMS affinché generi in automatico un Ordine di Lavoro preventivo o predittivo, verificando già la disponibilità del ricambio a magazzino.</p>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Caratteristica</th>
+                <th>CMMS</th>
+                <th>MES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ambito primario</strong></td>
+                <td>Gestione tecnica ed economica della manutenzione e degli asset.</td>
+                <td>Esecuzione, tracciabilità e controllo in tempo reale della produzione.</td>
+              </tr>
+              <tr>
+                <td><strong>Collocazione ISA-95</strong></td>
+                <td>Sistema di supporto trasversale integrato con ERP e Livello 3.</td>
+                <td>Livello 3 (ponte diretto tra ERP di Livello 4 e PLC/SCADA di Livello 2).</td>
+              </tr>
+              <tr>
+                <td><strong>Dati e KPI gestiti</strong></td>
+                <td>Anagrafica impianti, Ordini di Lavoro (OdL), ricambi, MTBF, MTTR.</td>
+                <td>Avanzamento commesse, tempi ciclo, scarti, causali di fermo, OEE.</td>
+              </tr>
+              <tr>
+                <td><strong>Archeologia storica</strong></td>
+                <td><em>Gimar:</em> primi database client-server per digitalizzare registri e scadenzari manutentivi.</td>
+                <td><em>KM:</em> primi sistemi con terminali di reparto e barcode per sostituire le bolle cartacee.</td>
+              </tr>
+              <tr>
+                <td><strong>Evoluzione 4.0</strong></td>
+                <td>Cloud/mobile, Realtà Aumentata, apertura automatica OdL da sensori IIoT.</td>
+                <td>Interconnessione bidirezionale OPC-UA/MQTT con PLC e calcolo OEE real-time.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">Tabella 1: Confronto sintetico tra piattaforme CMMS e MES nell'architettura di fabbrica.</p>
+      </section>
+
+      <!-- SEZIONE 4 -->
+      <section id="sec-4" class="section-card">
+        <div class="section-header">
+          <span class="section-num">04</span>
+          <h2>Confronto operativo tra le strategie manutentive</h2>
+        </div>
+        <p>La Tabella 2 riassume le differenze operative, tecnologiche ed economiche tra i tre approcci evolutivi della manutenzione industriale.</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Criterio</th>
+                <th>Manutenzione Preventiva</th>
+                <th>Manutenzione Preventiva 4.0</th>
+                <th>Manutenzione Predittiva</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Logica di intervento</strong></td>
+                <td>A scadenze fisse (tempo o cicli stimati da manuale).</td>
+                <td>A scadenze dinamiche basate sui dati reali di utilizzo della macchina.</td>
+                <td>Su condizione reale e previsione dell'evoluzione del degrado.</td>
+              </tr>
+              <tr>
+                <td><strong>Tecnologie chiave</strong></td>
+                <td>Manualistica tecnica, registri cartacei, contatori locali.</td>
+                <td>PLC interconnessi, MES, software CMMS, tablet, Realtà Aumentata.</td>
+                <td>Sensori IIoT (vibrazioni, temperatura, corrente), Big Data, Machine Learning.</td>
+              </tr>
+              <tr>
+                <td><strong>Vantaggio principale</strong></td>
+                <td>Riduce i guasti improvvisi rispetto alla manutenzione correttiva.</td>
+                <td>Elimina ritardi organizzativi, automatizza gli ordini di lavoro e guida il tecnico.</td>
+                <td>Massimizza la vita utile dei componenti ed elimina quasi del tutto i fermi imprevisti.</td>
+              </tr>
+              <tr>
+                <td><strong>Limite principale</strong></td>
+                <td>Spreco di ricambi ancora efficienti e fermi macchina non sempre necessari.</td>
+                <td>Non rileva anomalie improvvise tra un intervento programmato e l'altro.</td>
+                <td>Investimento iniziale elevato per sensoristica, infrastruttura dati e competenze analitiche.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">Tabella 2: Confronto operativo tra le strategie di manutenzione industriale.</p>
+      </section>
+
+      <!-- SEZIONE 5 -->
+      <section id="sec-5" class="section-card">
+        <div class="section-header">
+          <span class="section-num">05</span>
+          <h2>L'indicatore OEE e il cambio di filosofia organizzativa</h2>
+        </div>
+        <p>Per misurare concretamente se una strategia di manutenzione sta generando valore in fabbrica, l'industria moderna utilizza l'<strong>OEE (Overall Equipment Effectiveness – Efficienza Generale dell'Impianto)</strong>, un indicatore percentuale introdotto da Seiichi Nakajima nell'ambito del <strong>TPM (Total Productive Maintenance)</strong>.</p>
+
+        <h3>5.1 Definizione tecnica: i tre fattori e le Sei Grandi Perdite</h3>
+        <p>L'OEE misura quanta parte del tempo pianificato di produzione viene effettivamente impiegata per realizzare pezzi conformi alla massima velocità nominale. Matematicamente si esprime come il prodotto di tre fattori:</p>
+        <div class="formula-box">
+          $$\text{OEE} = \text{Disponibilità } (A) \times \text{Performance } (P) \times \text{Qualità } (Q) \qquad (1)$$
+        </div>
+        <p>Ciascuno dei tre fattori intercetta due specifiche categorie di inefficienza, note nella letteratura industriale come le <strong>Sei Grandi Perdite (Six Big Losses)</strong>, schematizzate visivamente nella Figura 3 e dettagliate di seguito con esempi pratici d'officina:</p>
+
+        <ol class="styled-list">
+          <li>
+            <strong>Disponibilità ($A$ – <em>Availability</em>):</strong> misura la percentuale di tempo in cui la macchina è effettivamente in marcia rispetto al tempo produttivo pianificato:
+            <div class="formula-box">$$A = \frac{\text{Tempo operativo netto}}{\text{Tempo pianificato di produzione}}$$</div>
+            È penalizzata dalle <strong>perdite di fermata</strong>, suddivise in due categorie:
+            <ul class="styled-list">
+              <li><strong>1. Guasti alle attrezzature (<em>Equipment Failure</em>):</strong> fermi imprevisti dovuti a cedimenti meccanici, elettrici o pneumatici che bloccano la produzione e richiedono un intervento correttivo (es. rottura o bruciatura di un motore elettrico, grippaggio di un cuscinetto, mancanza improvvisa di aria compressa nella linea).</li>
+              <li><strong>2. Setup e regolazioni (<em>Setup and Adjustments</em>):</strong> tempi improduttivi in cui l'impianto è fermo per operazioni di cambio produzione, attrezzaggio o messa a punto tra un lotto e il successivo (es. cambio stampo su una pressa, attesa per il riscaldamento di un forno industriale, calibrazione e azzeramento assi su un centro di lavoro CNC).</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Performance o Prestazioni ($P$ – <em>Performance Efficiency</em>):</strong> valuta se l'impianto sta lavorando al ritmo nominale previsto dal costruttore:
+            <div class="formula-box">$$P = \frac{\text{Tempo ciclo ideale} \times \text{Pezzi totali prodotti}}{\text{Tempo operativo netto}}$$</div>
+            È penalizzata dalle <strong>perdite di velocità</strong>, suddivise in due categorie:
+            <ul class="styled-list">
+              <li><strong>3. Micro-fermate (<em>Idling and Minor Stops</em>):</strong> brevi interruzioni operative (tipicamente inferiori a pochi minuti) che non richiedono l'intervento della manutenzione, ma vengono risolte dall'operatore di linea (es. inceppamento di un pezzo su un nastro trasportatore, sensore ottico sporco, riavvio rapido dopo un blocco di alimentazione).</li>
+              <li><strong>4. Velocità ridotta (<em>Reduced Speed</em>):</strong> funzionamento dell'impianto a una cadenza inferiore rispetto a quella nominale di progetto per evitare guasti o difetti (es. macchina rallentata volontariamente per evitare vibrazioni eccessive, surriscaldamento o usura precoce di organi meccanici).</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Qualità ($Q$ – <em>Quality Rate</em>):</strong> indica la quota di produzione conforme alle specifiche tecniche:
+            <div class="formula-box">$$Q = \frac{\text{Pezzi buoni (conformi)}}{\text{Pezzi totali prodotti}}$$</div>
+            È penalizzata dalle <strong>perdite di difettosità</strong>, suddivise in due categorie:
+            <ul class="styled-list">
+              <li><strong>5. Difetti di processo (<em>Process Defects</em>):</strong> pezzi non conformi generati durante il normale funzionamento a regime dell'impianto, che devono essere scartati o rilavorati (es. pezzo meccanico fuori tolleranza dimensionale per usura utensile, verniciatura irregolare, saldatura difettosa).</li>
+              <li><strong>6. Scarti di avviamento (<em>Startup Rejects / Reduced Yield</em>):</strong> perdite di resa che si verificano nella fase transitoria tra l'accensione della macchina (o la fine di un cambio formato) e il raggiungimento delle condizioni operative stabili (es. primi pezzi scartati prima che la macchina vada a regime di temperatura o pressione).</li>
+            </ul>
+          </li>
+        </ol>
+
+        <figure class="tech-figure">
+          <img src="img/6BigLosses_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='6BigLosses_2.jpg';}" alt="OEE: Le Sei Grandi Perdite" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 3:</strong> Schematizzazione didattica delle Sei Grandi Perdite (<em>Six Big Losses</em>) dell'OEE suddivise nei tre fattori: Disponibilità, Prestazioni (Performance) e Qualità. <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <p>La Tabella 3 riassume in modo strutturato il collegamento tra i tre fattori dell'OEE, le sei categorie di perdita e i relativi esempi operativi in reparto.</p>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Fattore OEE</th>
+                <th>Categoria di perdita</th>
+                <th>Esempi pratici in reparto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Disponibilità (A)</strong></td>
+                <td>1. Guasti alle attrezzature</td>
+                <td>Rottura di un motore elettrico, grippaggio cuscinetti, mancanza di aria compressa.</td>
+              </tr>
+              <tr>
+                <td><strong>Disponibilità (A)</strong></td>
+                <td>2. Setup e regolazioni</td>
+                <td>Cambio stampo su pressa, riscaldamento forno, calibrazione e azzeramento assi.</td>
+              </tr>
+              <tr>
+                <td><strong>Prestazioni (P)</strong></td>
+                <td>3. Micro-fermate</td>
+                <td>Inceppamento su nastro trasportatore, fotocellula sporca, riavvio rapido linea.</td>
+              </tr>
+              <tr>
+                <td><strong>Prestazioni (P)</strong></td>
+                <td>4. Velocità ridotta</td>
+                <td>Macchina rallentata per evitare vibrazioni eccessive o surriscaldamenti.</td>
+              </tr>
+              <tr>
+                <td><strong>Qualità (Q)</strong></td>
+                <td>5. Difetti di processo</td>
+                <td>Pezzo fuori tolleranza dimensionale, verniciatura irregolare, saldatura difettosa.</td>
+              </tr>
+              <tr>
+                <td><strong>Qualità (Q)</strong></td>
+                <td>6. Scarti di avviamento</td>
+                <td>Primi pezzi scartati prima che la macchina vada a regime termico o meccanico.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">Tabella 3: Quadro sinottico dei fattori OEE, delle Sei Grandi Perdite e degli esempi pratici d'officina.</p>
+
+        <div class="callout emerald" style="border-left: 4px solid var(--accent-emerald);">
+          <div class="callout-title">📊 Esempio numerico e soglia World Class</div>
+          <p>Se un impianto presenta $A = 90\%$, $P = 90\%$ e $Q = 90\%$, l'OEE complessivo non è il $90\%$, bensì:
+          $$\text{OEE} = 0,90 \times 0,90 \times 0,90 = 0,729 \text{ (} 72,9\% \text{)}$$
+          In ambito manifatturiero, un valore di OEE pari o superiore all'<strong>85%</strong> identifica un'organizzazione di livello <strong>World Class</strong>.</p>
+        </div>
+
+        <!-- Interactive Lab 2: Calcolatore OEE -->
+        <div class="interactive-lab">
+          <div class="lab-header">
+            <strong>🎛️ Calcolatore Interattivo OEE &amp; Diagnostica World Class</strong>
+            <span class="lab-badge">Simulatore TPM</span>
+          </div>
+          <div class="lab-grid">
+            <div class="control-group">
+              <label for="oee-a"><span>Disponibilità (A)</span><span id="oee-a-val">90%</span></label>
+              <input type="range" id="oee-a" min="40" max="100" step="1" value="90" />
+            </div>
+            <div class="control-group">
+              <label for="oee-p"><span>Performance (P)</span><span id="oee-p-val">90%</span></label>
+              <input type="range" id="oee-p" min="40" max="100" step="1" value="90" />
+            </div>
+            <div class="control-group">
+              <label for="oee-q"><span>Qualità (Q)</span><span id="oee-q-val">90%</span></label>
+              <input type="range" id="oee-q" min="40" max="100" step="1" value="90" />
+            </div>
+          </div>
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="kpi-label">OEE Complessivo</div>
+              <div class="kpi-val warn" id="oee-result">72,9%</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Classificazione</div>
+              <div class="kpi-val warn" id="oee-status" style="font-size:1.05rem;">Competitivo (Target 85%)</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Priorità Kaizen</div>
+              <div class="kpi-val" id="oee-bottleneck" style="font-size:0.95rem;">Bilanciato (A, P, Q pari)</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>5.2 La portata «filosofica» dell'OEE nell'organizzazione industriale</h3>
+        <p>Al di là della formula matematica, l'adozione dell'OEE rappresenta una vera e propria rivoluzione culturale e organizzativa all'interno dello stabilimento:</p>
+        <ul class="styled-list">
+          <li><strong>Superamento della cultura dei «silos» (Produzione contro Manutenzione):</strong> nell'organizzazione industriale tradizionale, i reparti operavano con obiettivi conflittuali. La Produzione spingeva gli impianti al limite per fare volume secondo la logica <em>«io produco, tu ripari»</em>, incolpando la Manutenzione in caso di guasto; viceversa, la Manutenzione accusava gli operatori di utilizzare male le macchine. L'OEE unifica entrambi i reparti sotto un unico indicatore condiviso: un guasto, un rallentamento o uno scarto riducono l'OEE di tutti, trasformando due funzioni contrapposte in una squadra alleata.</li>
+          <li><strong>Emersione delle perdite nascoste:</strong> prima dell'OEE, se una macchina non era ferma per un guasto evidente, veniva considerata «produttiva». L'OEE obbliga invece a vedere ciò che è invisibile a occhio nudo: una macchina che gira all'80% della velocità nominale a causa di un cuscinetto usurato o che produce il 5% di scarti per giochi meccanici sta bruciando margini economici esattamente come un fermo impianto.</li>
+          <li><strong>Responsabilità diffusa e Manutenzione Autonoma:</strong> la filosofia del TPM collegata all'OEE ridefinisce il ruolo dell'operatore di linea. Chi conduce la macchina non è più un semplice esecutore passivo, ma il primo «sensore umano» dell'impianto: si occupa della pulizia tecnica, dei controlli visivi e acustici quotidiani e segnala tempestivamente le anomalie prima che degenerino in guasti gravi.</li>
+          <li><strong>Dalla colpevolizzazione al miglioramento continuo (Kaizen):</strong> nelle aziende mature, l'OEE non viene mai usato come strumento punitivo per giudicare il singolo lavoratore, ma come una bussola diagnostica. Identificare quale dei tre fattori ($A$, $P$ o $Q$) sta abbassando l'indice consente di orientare gli investimenti dell'Industria 4.0 (sensori predittivi, software MES, formazione) esattamente dove si annida lo spreco (<em>Muda</em>).</li>
+        </ul>
+
+        <div class="callout violet">
+          <div class="callout-title">🎓 Nota didattica per il futuro tecnico ITIS</div>
+          <p>Padroneggiare questi concetti significa comprendere come evolve il lavoro del perito industriale e del tecnico meccatronico in reparto: accanto agli strumenti tradizionali (chiavi dinamometriche, multimetri, calibri), il manutentore 4.0 deve saper leggere dashboard diagnostiche, comprendere il flusso dei dati tra PLC, MES e CMMS e collaborare con gli operatori di produzione per mantenere elevato l'OEE, prevenendo i problemi prima che fermino la fabbrica.</p>
+        </div>
+      </section>
+
+      <!-- SEZIONE 6 -->
+      <section id="sec-6" class="section-card">
+        <div class="section-header">
+          <span class="section-num">06</span>
+          <h2>Gli indicatori di affidabilità e manutenibilità: MTBF, MTTR e Time to Recovery</h2>
+        </div>
+        <p>Per governare in modo scientifico il fattore <strong>Disponibilità ($A$)</strong> dell'OEE e valutare le prestazioni del servizio di manutenzione tramite i sistemi CMMS, l'ingegneria della manutenzione utilizza due indicatori fondamentali: l'<strong>MTBF</strong> e l'<strong>MTTR</strong>, affiancati dalla metrica organizzativa complessiva nota come <strong>Time to Recovery (TTR)</strong>.</p>
+
+        <h3>6.1 Definizione matematica e relazione temporale: MTBF e MTTR</h3>
+        <div class="grid-2">
+          <div class="mini-card">
+            <h4>MTBF (Mean Time Between Failures)</h4>
+            <p><strong>Tempo Medio Tra i Guasti:</strong> misura l'<em>affidabilità (Reliability)</em> di un sistema riparabile, ovvero l'intervallo medio di tempo che intercorre tra l'insorgere di un primo guasto e il verificarsi del guasto successivo:</p>
+            <div class="formula-box">$$\text{MTBF} = \frac{\text{Tempo totale di osservazione}}{\text{Numero di guasti rilevati}}$$</div>
+            <p>Un valore elevato di MTBF indica una macchina robusta, ben progettata e sottoposta a efficaci politiche di manutenzione preventiva o predittiva.</p>
+          </div>
+          <div class="mini-card violet">
+            <h4>MTTR (Mean Time To Repair)</h4>
+            <p><strong>Tempo Medio di Riparazione:</strong> misura la <em>manutenibilità (Maintainability)</em> dell'impianto e la rapidità tecnica di intervento, ossia il tempo medio necessario ai manutentori per riparare fisicamente il guasto e verificare il corretto ripristino funzionale:</p>
+            <div class="formula-box">$$\text{MTTR} = \frac{\text{Tempo totale dedicato alle riparazioni attive}}{\text{Numero di interventi di riparazione}}$$</div>
+            <p>Un valore basso di MTTR indica che la macchina è facilmente accessibile, modulare e che i tecnici dispongono di strumenti e procedure chiare per ripristinarla rapidamente.</p>
+          </div>
+        </div>
+
+        <p>Come illustrato nel diagramma temporale della Figura 4, durante il ciclo operativo di un impianto riparabile, l'MTBF abbraccia l'intero arco temporale compreso tra l'istante del <em>Primo Guasto</em> e quello del <em>Secondo Guasto</em> (includendo quindi sia la fase di fermo per ripristino sia il successivo periodo di funzionamento normale), mentre l'MTTR isola specificamente la finestra di intervento tecnico attivo tra l'inizio della riparazione e il ritorno al funzionamento normale.</p>
+
+        <figure class="tech-figure">
+          <img src="img/MTTR_MTBF_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='MTTR_MTBF_2.jpg';}" alt="Interazione Temporale MTBF e MTTR" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 4:</strong> Interazione temporale tra ciclo di funzionamento, diagnosi, fase di riparazione (MTTR) e intervallo medio tra due guasti consecutivi (MTBF). <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <p>In termini di ingegneria dell'affidabilità, distinguendo il tempo medio di puro funzionamento prima del guasto (<strong>MTTF – Mean Time To Failure</strong>, tale per cui $\text{MTBF} = \text{MTTF} + \text{MTTR}$), la <strong>Disponibilità intrinseca ($A_i$)</strong> dell'impianto è direttamente legata a questi due parametri dalla relazione:</p>
+        <div class="formula-box">
+          $$A_i = \frac{\text{MTTF}}{\text{MTTF} + \text{MTTR}} = \frac{\text{MTTF}}{\text{MTBF}} \qquad (2)$$
+        </div>
+        <p>Da questa formula emerge chiaramente che la disponibilità dell'impianto cresce quanto più si riesce ad aumentare l'affidabilità (allungando l'MTBF) e a ridurre i tempi di ripristino (abbassando l'MTTR).</p>
+
+        <h3>6.2 Oltre il «tempo di cacciavite»: MTTR contro Time to Recovery (TTR)</h3>
+        <p>Nell'organizzazione reale di uno stabilimento, concentrarsi esclusivamente sull'MTTR può generare una visione parziale del problema. Come evidenziato nella tavola didattica di Figura 5, l'MTTR misura esclusivamente la fase tecnica attiva (smontaggio, sostituzione del componente, taratura e test di collaudo, spesso definita in gergo <em>«tempo di cacciavite»</em>).</p>
+        <p>Tuttavia, dal punto di vista della produzione, il fermo macchina effettivo — definito <strong>Time to Recovery (TTR)</strong> o <strong>MTRS (Mean Time To Restore)</strong> — inizia nel momento esatto in cui la macchina si arresta e termina solo quando la linea riprende a produrre pezzi conformi a regime. Esso comprende tre fasi distinte:</p>
+        <ol class="styled-list">
+          <li><strong>Tempo di rilevazione e notifica:</strong> l'intervallo che intercorre tra l'evento di guasto e la segnalazione effettiva alla squadra di manutenzione.</li>
+          <li><strong>Tempo di diagnosi e logistica:</strong> il tempo impiegato per individuare la causa radice, contattare gli specialisti e reperire i ricambi a magazzino.</li>
+          <li><strong>Tempo di riparazione e test (MTTR):</strong> l'intervento tecnico vero e proprio fino al riavvio della produzione.</li>
+        </ol>
+
+        <figure class="tech-figure">
+          <img src="img/MTTR_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='MTTR_2.jpg';}" alt="Time to Recovery: la misura di tutto!" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 5:</strong> Confronto organizzativo tra il solo tempo tecnico di riparazione (MTTR) e l'intero ciclo di ripristino (Time to Recovery), includendo notifica, diagnosi e logistica ricambi. <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <p>Questa distinzione spiega perché l'Industria 4.0 sia decisiva: anche una squadra di tecnici eccellente (con un MTTR bassissimo) può perdere ore preziose se manca un flusso informativo efficiente. L'integrazione tra PLC, MES e CMMS abbatte drasticamente le prime due fasi del Time to Recovery, inviando notifiche automatiche istantanee allo smartphone del manutentore, indicando già il codice di allarme diagnostico e verificando in tempo reale l'ubicazione del ricambio a magazzino.</p>
+
+        <h3>6.3 L'equilibrio strategico tra affidabilità e rapidità di intervento</h3>
+        <p>Un errore gestionale frequente nelle officine tradizionali consiste nel celebrare la velocità con cui i manutentori risolvono le emergenze (un MTTR molto basso) trascurando però la frequenza con cui la macchina si guasta (un MTBF troppo basso). La tavola illustrata in Figura 6 sintetizza con taglio ironico ma rigoroso questa trappola operativa:</p>
+
+        <figure class="tech-figure">
+          <img src="img/MTTR_MTBF_ironico_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='MTTR_MTBF_ironico_2.jpg';}" alt="Ciclo di vita: MTBF vs MTTR" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 6:</strong> Rappresentazione didattica del ciclo di vita MTBF vs. MTTR: l'importanza di bilanciare la rapidità di riparazione (manutenibilità) con la riduzione della frequenza dei guasti (affidabilità). <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <p>Come suggerisce la lezione finale della vignetta (<em>«MTTR eccellente, MTBF da migliorare»</em>), vivere in perenne emergenza logora gli operatori, genera costi elevati per ricambi urgenti e destabilizza i piani di consegna. La vera maturità della Manutenzione Preventiva e Predittiva 4.0 consiste nell'agire in modo bilanciato su entrambi i fronti:</p>
+        <ul class="styled-list">
+          <li><strong>Aumentare l'MTBF:</strong> monitorando vibrazioni, temperature e assorbimenti tramite sensori IIoT per intercettare i segnali deboli di usura ed eliminare le cause radice dei guasti casuali.</li>
+          <li><strong>Ridurre l'MTTR e il TTR:</strong> supportando i tecnici con diagnostica guidata, realtà aumentata e integrazione digitale tra campo e magazzino ricambi.</li>
+        </ul>
+
+        <!-- Interactive Lab 3: Calcolatore MTBF / MTTR / Ai -->
+        <div class="interactive-lab">
+          <div class="lab-header">
+            <strong>⏱️ Calcolatore Affidabilità: MTBF, MTTR, TTR e Disponibilità Intrinseca ($A_i$)</strong>
+            <span class="lab-badge">Ingegneria della Manutenzione</span>
+          </div>
+          <div class="lab-grid">
+            <div class="control-group">
+              <label for="rel-obs"><span>Tempo totale osservazione (ore)</span></label>
+              <input type="number" id="rel-obs" min="10" max="10000" value="720" />
+            </div>
+            <div class="control-group">
+              <label for="rel-fails"><span>Numero di guasti rilevati</span></label>
+              <input type="number" id="rel-fails" min="1" max="500" value="6" />
+            </div>
+            <div class="control-group">
+              <label for="rel-mttr"><span>MTTR tecnico attivo (ore/guasto)</span></label>
+              <input type="number" id="rel-mttr" min="0.1" max="100" step="0.1" value="1.5" />
+            </div>
+            <div class="control-group">
+              <label for="rel-delay"><span>Ritardo notifica/ricambi (ore/guasto)</span></label>
+              <input type="number" id="rel-delay" min="0" max="100" step="0.1" value="2.0" />
+            </div>
+          </div>
+          <div class="kpi-strip">
+            <div class="kpi-box">
+              <div class="kpi-label">MTBF</div>
+              <div class="kpi-val" id="res-mtbf">120,0 h</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Time to Recovery (TTR)</div>
+              <div class="kpi-val warn" id="res-ttr">3,5 h</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Disponibilità Intrinseca ($A_i$)</div>
+              <div class="kpi-val ok" id="res-ai">98,75%</div>
+            </div>
+            <div class="kpi-box">
+              <div class="kpi-label">Disponibilità Operativa (con TTR)</div>
+              <div class="kpi-val warn" id="res-ao">97,08%</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEZIONE 7 -->
+      <section id="sec-7" class="section-card">
+        <div class="section-header">
+          <span class="section-num">07</span>
+          <h2>Infrastruttura di rete e protocolli di comunicazione (Modello ISO/OSI)</h2>
+        </div>
+        <p>Affinché i sensori IIoT, i PLC a bordo macchina e le piattaforme gestionali (MES e CMMS) possano scambiarsi informazioni in modo affidabile e privo di ambiguità, è indispensabile adottare un'infrastruttura di rete basata su <strong>protocolli di comunicazione standardizzati</strong>. Un protocollo definisce l'insieme delle regole sintattiche, semantiche e temporali che governano la trasmissione dei dati tra dispositivi eterogenei attraverso reti di diversa estensione (<strong>PAN, LAN e WAN</strong>).</p>
+        <p>Per comprendere come i dati viaggino dal singolo trasduttore fisico fino al cloud o al server di fabbrica, si fa riferimento al modello architetturale <strong>ISO/OSI (Open Systems Interconnection)</strong>, che suddivide il processo di comunicazione in <strong>7 livelli logici indipendenti</strong> (dal Livello 1 <em>Fisico</em>, relativo a cavi, connettori e segnali elettrici/ottici, fino al Livello 7 <em>Applicazione</em>, in cui operano i protocolli industriali come OPC UA e MQTT).</p>
+
+        <h3>7.1 Il protocollo MQTT e l'architettura Publish/Subscribe</h3>
+        <p>Tra i protocolli operanti al <strong>Livello 7 (Applicazione)</strong> del modello ISO/OSI, <strong>MQTT (Message Queuing Telemetry Transport)</strong> rappresenta uno degli standard più diffusi nell'ambito dell'Industrial Internet of Things (IIoT) grazie alla sua leggerezza, al ridotto consumo di banda e all'affidabilità anche su reti con latenza variabile.</p>
+        <p>A differenza delle comunicazioni tradizionali punto-punto (<em>client-server</em>), MQTT adotta un modello asincrono di tipo <strong>Publish/Subscribe (Pubblica-Sottoscrivi)</strong>, strutturato attorno a tre elementi principali (illustrati nella Figura 7):</p>
+        <div class="grid-3">
+          <div class="mini-card">
+            <h4>Dispositivi di campo e Publisher (Editori)</h4>
+            <p>I sensori, i PLC (Controllori Logici Programmabili) e le RTU (Unità Terminali Remote) acquisiscono le grandezze fisiche dall'impianto — spesso tramite protocolli di campo come EtherNet/IP — e, attraverso un'interfaccia o gateway MQTT, pubblicano i dati etichettandoli per argomento (<em>topic</em>, ad esempio <code>reparto1/pressa02/temperatura</code>).</p>
+          </div>
+          <div class="mini-card violet">
+            <h4>MQTT Broker</h4>
+            <p>È il nodo centrale dell'architettura (un server locale in fabbrica o in cloud). Il Broker riceve tutti i messaggi pubblicati dai dispositivi di campo, li filtra in base al <em>topic</em> e li inoltra esclusivamente ai destinatari interessati, disaccoppiando completamente chi produce il dato da chi lo utilizza.</p>
+          </div>
+          <div class="mini-card emerald">
+            <h4>Client MQTT e Subscriber (Sottoscrittori)</h4>
+            <p>Sono le applicazioni e i terminali che si iscrivono a specifici <em>topic</em> per ricevere in tempo reale i flussi di dati (oppure pubblicare comandi verso il campo). Rientrano in questa categoria i Database storici, le Dashboard di supervisione (MES/CMMS) e i dispositivi degli operatori e dei manutentori (laptop, desktop, touchscreen e dispositivi mobili).</p>
+          </div>
+        </div>
+
+        <figure class="tech-figure">
+          <img src="img/image_d445da.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='image_d445da.jpg';}" alt="Architettura MQTT Publish/Subscribe" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 7:</strong> Architettura di comunicazione industriale basata sul protocollo MQTT e sul modello Publish/Subscribe tramite MQTT Broker. <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <h3>7.2 Il protocollo OPC UA e l'integrazione tra mondo IT e OT</h3>
+        <p>Accanto a MQTT, l'altro standard cardine del <strong>Livello 7 (Applicazione)</strong> del modello ISO/OSI nell'Industria 4.0 è <strong>OPC UA (Open Platform Communications Unified Architecture)</strong>, progettato per garantire un'interoperabilità sicura e standardizzata tra macchine di costruttori diversi e sistemi informatici aziendali.</p>
+        <p>Come illustrato nella Figura 8, OPC UA nasce per superare i limiti strutturali del precedente standard <em>OPC Classic</em>:</p>
+        <ul class="styled-list">
+          <li><strong>Limiti di OPC Classic:</strong> basato sulla tecnologia Microsoft COM/DCOM, era vincolato esclusivamente ai sistemi operativi Windows, risultava complesso da configurare in rete, difficile da scalare su impianti complessi e privo di meccanismi di sicurezza nativi.</li>
+          <li><strong>Indipendenza dalla piattaforma e architettura SOA:</strong> OPC UA adotta un'architettura orientata ai servizi (<strong>SOA – Service-Oriented Architecture</strong>) e comunica tramite protocolli standard di rete (trasporto binario su TCP oppure Web Services SOAP/XML su HTTP). Ciò consente di eseguire server e client OPC UA su qualsiasi piattaforma hardware e software: PLC modulari, sistemi operativi Linux o Windows, sistemi embedded, pannelli operatore (HMI) e server aziendali.</li>
+          <li><strong>Sicurezza nativa e modellazione semantica:</strong> integra fin dalla progettazione crittografia, autenticazione tramite certificati digitali e controllo degli accessi, permettendo inoltre di trasmettere non solo il valore grezzo di una variabile (es. «78,5»), ma anche il suo significato ingegneristico, l'unità di misura e lo stato di allarme.</li>
+          <li><strong>Il ponte tra OT e IT:</strong> all'interno della fabbrica 4.0, OPC UA realizza la convergenza tra la <strong>Tecnologia Operativa (OT)</strong> — composta da PLC, controllori e bus di campo come EtherNet/IP — e la <strong>Tecnologia dell'Informazione (IT)</strong>, alimentando in modo diretto e bidirezionale sistemi SCADA, MES, ERP e dashboard diagnostiche per la manutenzione.</li>
+          <li><strong>Complementarità tra OPC UA e MQTT:</strong> nelle architetture industriali moderne i due protocolli non sono alternativi ma complementari. OPC UA è ideale per la comunicazione strutturata e deterministica a bordo macchina e tra PLC, SCADA e MES; MQTT eccelle invece nella distribuzione leggera della telemetria verso il cloud, i database storici e molteplici client mobili grazie al modello Publish/Subscribe.</li>
+        </ul>
+
+        <figure class="tech-figure">
+          <img src="img/OPC UA_2.jpg" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='OPC UA_2.jpg';}" alt="Evoluzione da OPC Classic a OPC UA" onclick="openLightbox(this)" />
+          <figcaption><strong>Figura 8:</strong> Evoluzione da OPC Classic a OPC UA: indipendenza dalla piattaforma, sicurezza nativa e integrazione tra livelli OT e IT. <span class="zoom-hint">🔍 Clicca sull'immagine per ingrandire</span></figcaption>
+        </figure>
+
+        <div class="callout cyan">
+          <div class="callout-title">🔗 Risorsa didattica per il proseguimento del corso</div>
+          <p>Per approfondire la classificazione delle reti (<strong>PAN, LAN, WAN</strong>), il funzionamento dei protocolli di comunicazione e l'architettura a sette livelli del modello <strong>ISO/OSI</strong> — concetti propedeutici che utilizzeremo nel proseguimento del lavoro — fare riferimento alla dispensa interattiva disponibile al seguente indirizzo:<br />
+          <a class="ext-link" href="https://luigipelagagge-oss.github.io/Reti-LAN-WAN-PAN/" target="_blank" rel="noopener">https://luigipelagagge-oss.github.io/Reti-LAN-WAN-PAN/</a></p>
+        </div>
+      </section>
+
+      <!-- SEZIONE 8: GLOSSARIO -->
+      <section id="glossario" class="section-card">
+        <div class="section-header">
+          <span class="section-num">08</span>
+          <h2>Glossario degli acronimi, eccezioni e curiosità linguistiche</h2>
+        </div>
+        <p>Il presente glossario raccoglie in ordine alfabetico tutti i <strong>43 acronimi tecnici, normativi e informatici</strong> utilizzati nella dispensa, riportandone lo scioglimento ufficiale in lingua originale, la traduzione italiana, le eventuali eccezioni storiche e le curiosità linguistiche legate alla loro diffusione internazionale.</p>
+
+        <div class="callout amber">
+          <div class="callout-title">🔍 Focus terminologico: la doppia accezione dell'acronimo MTTR</div>
+          <p>Nella letteratura tecnica dell'ingegneria della manutenzione e dei sistemi IT, l'acronimo <strong>MTTR</strong> presenta due distinte desinenze che è fondamentale non confondere durante l'analisi dei KPI di fabbrica:</p>
+          <ul class="styled-list" style="margin-bottom:0;">
+            <li><strong>Mean Time To Repair (Tempo Medio di Riparazione):</strong> tempo medio necessario per riparare un guasto. Si concentra esclusivamente sull'intervento tecnico attivo necessario per correggere il problema (smontaggio, sostituzione o riparazione del componente e verifica funzionale).</li>
+            <li><strong>Mean Time To Restore (o Mean Time To Recovery – Tempo Medio di Ripristino):</strong> tempo medio necessario per ripristinare completamente il servizio o la produzione. Include non solo la riparazione fisica, ma qualsiasi azione organizzativa o sistemistica che permetta di tornare operativi, ad esempio la notifica del guasto, il reperimento dei ricambi, il failover a un sistema di backup, il riavvio di un servizio o il ripristino di configurazioni e programmi da backup.</li>
+          </ul>
+        </div>
+
+        <div class="glossary-controls">
+          <input type="search" id="gloss-search" class="glossary-search" placeholder="Cerca acronimo, significato o curiosità (es. MQTT, ISO, SCADA, Gimar, Sèvres)..." aria-label="Cerca nel glossario" />
+          <div class="filter-pills" id="gloss-filters">
+            <button class="filter-pill active" data-filter="all" type="button">Tutti (43)</button>
+            <button class="filter-pill" data-filter="kpi" type="button">KPI &amp; Manutenzione</button>
+            <button class="filter-pill" data-filter="software" type="button">Software &amp; Automazione</button>
+            <button class="filter-pill" data-filter="reti" type="button">Reti &amp; Protocolli</button>
+            <button class="filter-pill" data-filter="norme" type="button">Norme &amp; Enti</button>
+            <button class="filter-pill" data-filter="curiosita" type="button">Con Curiosità / Eccezioni</button>
+          </div>
+        </div>
+
+        <div class="glossary-grid" id="glossary-grid"></div>
+      </section>
+
+      <!-- SEZIONE 9: SITOGRAFIA -->
+      <section id="sec-9" class="section-card">
+        <div class="section-header">
+          <span class="section-num">09</span>
+          <h2>Sitografia e riferimenti culturali</h2>
+        </div>
+        <p>Per approfondire i collegamenti interdisciplinari tra storia della misura, cultura tecnica, normativa industriale e architetture di rete affrontati nella dispensa, si propongono i seguenti riferimenti culturali e risorse web selezionate.</p>
+
+        <h3>9.1 Riferimenti culturali e storia della misura</h3>
+        <ul class="styled-list">
+          <li>
+            <strong>Rizzoli Education – Podcast Storia della Matematica (Maturadio), Episodio 6: Agrimensura:</strong><br />
+            <a class="ext-link" href="https://www.youtube.com/watch?v=7JYsdhpWrUc" target="_blank" rel="noopener">https://www.youtube.com/watch?v=7JYsdhpWrUc</a><br />
+            Contributo audio-didattico dedicato all'origine storica della misurazione dei terreni (dall'antico Egitto e dalla figura degli <em>arpedonapti</em>, i «tenditori di corde» incaricati di ridisegnare i confini dei campi dopo le piene del Nilo, fino alla nascita della geometria pratica e degli standard metrici). Rappresenta un utile ponte interdisciplinare tra matematica, storia della tecnica ed economia per contestualizzare l'esempio dell'agrimensore e l'importanza dell'uniformità delle unità di misura affrontati nella Sezione 2.2.
+          </li>
+          <li>
+            <strong>BIPM – Bureau International des Poids et Mesures (Sèvres, Francia):</strong><br />
+            <a class="ext-link" href="https://www.bipm.org" target="_blank" rel="noopener">https://www.bipm.org</a><br />
+            Portale storico e metrologico dell'organizzazione internazionale istituita con la Convenzione del Metro del 1875, depositaria del Sistema Internazionale di unità di misura (SI) e del celebre prototipo in platino-iridio del Metro di Sèvres.
+          </li>
+        </ul>
+
+        <h3>9.2 Sitografia tecnica e normativa (Reti, Standard e Industria 4.0)</h3>
+        <ul class="styled-list">
+          <li>
+            <strong>Dispensa interattiva sulle reti di calcolatori e sul modello ISO/OSI (a cura del docente):</strong><br />
+            <a class="ext-link" href="https://luigipelagagge-oss.github.io/Reti-LAN-WAN-PAN/" target="_blank" rel="noopener">https://luigipelagagge-oss.github.io/Reti-LAN-WAN-PAN/</a><br />
+            Risorsa didattica di supporto per lo studio delle reti PAN, LAN, WAN, dei protocolli di comunicazione e dei sette livelli del modello architetturale ISO/OSI (Sezione 7).
+          </li>
+          <li>
+            <strong>UNI – Ente Italiano di Normazione:</strong> <a class="ext-link" href="https://www.uni.com" target="_blank" rel="noopener">https://www.uni.com</a> — Portale ufficiale della normazione tecnica italiana ed europea, con accesso alle schede delle norme sulla manutenzione industriale (tra cui la UNI EN 13306).
+          </li>
+          <li>
+            <strong>ISO – International Organization for Standardization:</strong> <a class="ext-link" href="https://www.iso.org" target="_blank" rel="noopener">https://www.iso.org</a> — Sito ufficiale dell'organizzazione internazionale che elabora gli standard tecnici mondiali nei settori dell'ingegneria, della qualità, dell'affidabilità e delle telecomunicazioni.
+          </li>
+          <li>
+            <strong>OPC Foundation (Specifiche ufficiali OPC UA):</strong> <a class="ext-link" href="https://opcfoundation.org" target="_blank" rel="noopener">https://opcfoundation.org</a> — Documentazione tecnica, linee guida di sicurezza e risorse architetturali sullo standard OPC UA per l'interoperabilità tra sistemi OT e IT.
+          </li>
+          <li>
+            <strong>MQTT.org (Specifiche ufficiali OASIS MQTT):</strong> <a class="ext-link" href="https://mqtt.org" target="_blank" rel="noopener">https://mqtt.org</a> — Portale di riferimento per il protocollo MQTT (Publish/Subscribe), con documentazione tecnica sulle architetture IIoT e sui Broker.
+          </li>
+          <li>
+            <strong>ISA – International Society of Automation:</strong> <a class="ext-link" href="https://www.isa.org" target="_blank" rel="noopener">https://www.isa.org</a> — Risorse tecniche e normative sull'automazione industriale e sullo standard ISA-95 per l'integrazione tra livelli aziendali (ERP) e sistemi di esecuzione della produzione (MES).
+          </li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <p><strong>Corso 9: Manutenzione Predittiva – Industria 4.0</strong> • Dispensa didattica ITIS • Prof. Luigi Pelagagge (Novembre 2026)</p>
+    <p style="margin-top:0.35rem; font-size:0.82rem;">Sviluppato per la didattica laboratoriale e la consultazione open-source su GitHub Pages.</p>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Visualizzazione ingrandita figura">
+    <button class="lightbox-close" type="button" onclick="closeLightbox()">✕ Chiudi</button>
+    <img id="lightbox-img" src="" alt="" />
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+
+  <script>
+    // 1. Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlEl = document.documentElement;
+    themeToggle.addEventListener('click', () => {
+      const current = htmlEl.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      htmlEl.setAttribute('data-theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Tema Aula' : '🌙 Tema Cyber';
+    });
+
+    // 2. Scroll Progress & Active TOC
+    const progressBar = document.getElementById('scroll-progress');
+    const sections = document.querySelectorAll('main section[id]');
+    const tocLinks = document.querySelectorAll('#toc-list a');
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = pct + '%';
+
+      let currentId = '';
+      sections.forEach(sec => {
+        if (scrollTop >= sec.offsetTop - 130) {
+          currentId = sec.getAttribute('id');
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
+      });
+    });
+
+    // 3. Lightbox Modal
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+
+    function openLightbox(imgEl) {
+      lightboxImg.src = imgEl.currentSrc || imgEl.src;
+      lightboxImg.alt = imgEl.alt;
+      const figcap = imgEl.closest('figure')?.querySelector('figcaption');
+      lightboxCaption.textContent = figcap ? figcap.textContent.replace('🔍 Clicca sull\'immagine per ingrandire', '').trim() : imgEl.alt;
+      lightbox.classList.add('open');
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+    }
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    // 4. Simulator 1: Metro di Sèvres
+    const meterSlider = document.getElementById('meter-slider');
+    const meterVal = document.getElementById('meter-val');
+    const sevresArea = document.getElementById('sevres-area');
+    const sevresDiff = document.getElementById('sevres-diff');
+    const sevresCost = document.getElementById('sevres-cost');
+
+    function updateSevres() {
+      const cm = parseFloat(meterSlider.value);
+      meterVal.textContent = cm.toFixed(1) + ' cm';
+      const ratio = 100 / cm;
+      const measuredL = 900 * ratio;
+      const measuredW = 300 * ratio;
+      const area = Math.round(measuredL * measuredW);
+      const diff = area - 270000;
+      const costDiff = diff * 1000;
+
+      const fmt = new Intl.NumberFormat('it-IT');
+      sevresArea.textContent = fmt.format(area) + ' m²';
+      sevresDiff.textContent = (diff >= 0 ? '+' : '') + fmt.format(diff) + ' m²';
+      sevresCost.textContent = (costDiff >= 0 ? '+' : '') + fmt.format(costDiff) + ' €';
+
+      const stateClass = diff === 0 ? 'ok' : (Math.abs(diff) < 10000 ? 'warn' : 'danger');
+      sevresArea.className = 'kpi-val ' + stateClass;
+      sevresDiff.className = 'kpi-val ' + stateClass;
+      sevresCost.className = 'kpi-val ' + stateClass;
+    }
+    meterSlider.addEventListener('input', updateSevres);
+
+    // 5. Simulator 2: OEE Calculator
+    const oeeA = document.getElementById('oee-a');
+    const oeeP = document.getElementById('oee-p');
+    const oeeQ = document.getElementById('oee-q');
+    const oeeAVal = document.getElementById('oee-a-val');
+    const oeePVal = document.getElementById('oee-p-val');
+    const oeeQVal = document.getElementById('oee-q-val');
+    const oeeResult = document.getElementById('oee-result');
+    const oeeStatus = document.getElementById('oee-status');
+    const oeeBottleneck = document.getElementById('oee-bottleneck');
+
+    function updateOEE() {
+      const a = parseFloat(oeeA.value);
+      const p = parseFloat(oeeP.value);
+      const q = parseFloat(oeeQ.value);
+      oeeAVal.textContent = a + '%';
+      oeePVal.textContent = p + '%';
+      oeeQVal.textContent = q + '%';
+
+      const oee = (a / 100) * (p / 100) * (q / 100) * 100;
+      oeeResult.textContent = oee.toFixed(1).replace('.', ',') + '%';
+
+      if (oee >= 85) {
+        oeeResult.className = 'kpi-val ok';
+        oeeStatus.className = 'kpi-val ok';
+        oeeStatus.textContent = 'World Class (≥ 85%)';
+      } else if (oee >= 70) {
+        oeeResult.className = 'kpi-val warn';
+        oeeStatus.className = 'kpi-val warn';
+        oeeStatus.textContent = 'Competitivo (Target 85%)';
+      } else {
+        oeeResult.className = 'kpi-val danger';
+        oeeStatus.className = 'kpi-val danger';
+        oeeStatus.textContent = 'Critico (< 70%)';
+      }
+
+      const minVal = Math.min(a, p, q);
+      if (a === p && p === q) {
+        oeeBottleneck.textContent = 'Bilanciato (A, P, Q pari)';
+      } else if (minVal === a) {
+        oeeBottleneck.textContent = 'Agire su Disponibilità (Guasti/Setup)';
+      } else if (minVal === p) {
+        oeeBottleneck.textContent = 'Agire su Performance (Micro-fermate)';
+      } else {
+        oeeBottleneck.textContent = 'Agire su Qualità (Scarti/Tolleranze)';
+      }
+    }
+    [oeeA, oeeP, oeeQ].forEach(el => el.addEventListener('input', updateOEE));
+
+    // 6. Simulator 3: MTBF & MTTR Calculator
+    const relObs = document.getElementById('rel-obs');
+    const relFails = document.getElementById('rel-fails');
+    const relMttr = document.getElementById('rel-mttr');
+    const relDelay = document.getElementById('rel-delay');
+    const resMtbf = document.getElementById('res-mtbf');
+    const resTtr = document.getElementById('res-ttr');
+    const resAi = document.getElementById('res-ai');
+    const resAo = document.getElementById('res-ao');
+
+    function updateReliability() {
+      const obs = Math.max(1, parseFloat(relObs.value) || 1);
+      const fails = Math.max(1, parseFloat(relFails.value) || 1);
+      const mttr = Math.max(0, parseFloat(relMttr.value) || 0);
+      const delay = Math.max(0, parseFloat(relDelay.value) || 0);
+
+      const mtbf = obs / fails;
+      const ttr = mttr + delay;
+      const mttf = Math.max(0, mtbf - mttr);
+      const mttfOp = Math.max(0, mtbf - ttr);
+      const ai = (mttf / mtbf) * 100;
+      const ao = (mttfOp / mtbf) * 100;
+
+      resMtbf.textContent = mtbf.toFixed(1).replace('.', ',') + ' h';
+      resTtr.textContent = ttr.toFixed(1).replace('.', ',') + ' h';
+      resAi.textContent = ai.toFixed(2).replace('.', ',') + '%';
+      resAo.textContent = ao.toFixed(2).replace('.', ',') + '%';
+    }
+    [relObs, relFails, relMttr, relDelay].forEach(el => el.addEventListener('input', updateReliability));
+
+    // 7. Complete 43-item Glossary Data & Search/Filter
+    const glossaryData = [
+      { term: "AR", full: "Augmented Reality (Realtà Aumentata)", cat: "software", desc: "Tecnologia che sovrappone istruzioni digitali, schemi elettrici o modelli 3D al campo visivo dell'operatore tramite tablet o visori." },
+      { term: "CMMS", full: "Computerized Maintenance Management System", cat: "software", desc: "Sistema Informatizzato per la Gestione della Manutenzione: software gestionale dedicato ad anagrafica impianti, pianificazione manutentiva, Ordini di Lavoro e magazzino ricambi." },
+      { term: "CNC", full: "Computer Numerical Control (Controllo Numerico Computerizzato)", cat: "software", desc: "Dispositivo elettronico integrato nelle macchine utensili per governarne con precisione gli assi e i cicli di lavorazione.", note: "Curiosità storica: nasce negli anni Cinquanta al MIT come semplice NC (Numerical Control, basato su nastri perforati) ed evolve in CNC solo negli anni Settanta con l'integrazione dei microprocessori programmabili." },
+      { term: "COM / DCOM", full: "Component Object Model / Distributed Component Object Model", cat: "reti", desc: "Architettura software proprietaria Microsoft (Modello a Oggetti Componenti / Distribuito) su cui si basava il protocollo storico OPC Classic." },
+      { term: "EN", full: "European Norm (Norma Europea)", cat: "norme", desc: "Standard tecnico armonizzato a livello europeo (ad esempio nella sigla UNI EN 13306).", note: "Eccezione linguistica: la sigla EN rimane invariata in tutti gli Stati membri dell'Unione Europea (non viene tradotta in NE in italiano o francese) ed è preceduta dalla sigla dell'ente nazionale che recepisce la norma (es. UNI EN in Italia, DIN EN in Germania)." },
+      { term: "ERP", full: "Enterprise Resource Planning (Pianificazione delle Risorse d'Impresa)", cat: "software", desc: "Sistema gestionale aziendale di Livello 4 (ISA-95) per amministrazione, contabilità, acquisti, vendite e pianificazione generale." },
+      { term: "HMI", full: "Human-Machine Interface (Interfaccia Uomo-Macchina)", cat: "software", desc: "Pannello operatore, spesso dotato di schermo touchscreen, che consente la supervisione e il comando locale della macchina." },
+      { term: "HTTP", full: "Hyper Text Transfer Protocol", cat: "reti", desc: "Protocollo di Trasferimento Ipertestuale: protocollo applicativo utilizzato anche per il trasporto di Web Services (es. SOAP/XML in OPC UA)." },
+      { term: "IIoT", full: "Industrial Internet of Things (Internet delle Cose Industriale)", cat: "reti", desc: "Rete di sensori intelligenti, attuatori e dispositivi interconnessi installati sugli impianti produttivi per il monitoraggio continuo." },
+      { term: "IP", full: "Industrial Protocol (nell'acronimo EtherNet/IP)", cat: "reti", desc: "Protocollo applicativo industriale CIP incapsulato su reti Ethernet (scritto ufficialmente con la 'N' maiuscola).", note: "Eccezione / Falso amico: in EtherNet/IP indica Industrial Protocol, da non confondere con il più noto Internet Protocol (protocollo di indirizzamento di Livello 3 dello stack TCP/IP)." },
+      { term: "ISA", full: "International Society of Automation", cat: "norme", desc: "Società Internazionale dell'Automazione, organizzazione tecnica autore dello standard ISA-95 per l'integrazione tra sistemi aziendali e di controllo.", note: "Eccezione storica: la sigla originaria fondata nel 1945 significava Instrument Society of America; l'acronimo è stato mantenuto invariato anche dopo la trasformazione in organizzazione internazionale." },
+      { term: "ISO", full: "International Organization for Standardization", cat: "norme", desc: "Organizzazione Internazionale per la Normazione: ente mondiale preposto alla definizione di standard tecnici e modelli architetturali (es. ISO/OSI).", note: "Curiosità linguistica: non è un acronimo vero e proprio (in inglese sarebbe IOS e in francese OIN), ma deriva dal greco ísos ('uguale') per garantire un nome identico in ogni paese." },
+      { term: "IT", full: "Information Technology (Tecnologia dell'Informazione)", cat: "software", desc: "L'insieme dei sistemi informatici, server, reti e software gestionali aziendali (ERP, MES, database, cloud)." },
+      { term: "ITIS", full: "Istituto Tecnico Industriale Statale", cat: "norme", desc: "Istituzione scolastica superiore dedicata alla formazione tecnica nei settori industriale, meccanico, meccatronico, elettronico e informatico." },
+      { term: "KPI", full: "Key Performance Indicator (Indicatore Chiave di Prestazione)", cat: "kpi", desc: "Metrica quantitativa utilizzata per valutare l'efficacia e l'efficienza di un processo produttivo o manutentivo (es. OEE, MTBF, MTTR)." },
+      { term: "LAN", full: "Local Area Network (Rete Locale)", cat: "reti", desc: "Rete di comunicazione dati che interconnette dispositivi all'interno di un'area circoscritta, come uno stabilimento industriale o un ufficio." },
+      { term: "MES", full: "Manufacturing Execution System (Sistema di Esecuzione della Produzione)", cat: "software", desc: "Software di Livello 3 (ISA-95) che coordina, traccia e controlla in tempo reale l'avanzamento della produzione in reparto." },
+      { term: "MQTT", full: "Message Queuing Telemetry Transport", cat: "reti", desc: "Protocollo di comunicazione leggero di Livello 7 (ISO/OSI) basato sull'architettura asincrona Publish/Subscribe tramite Broker, ideale per applicazioni IIoT.", note: "Eccezione evolutiva: coniato nel 1999 come acronimo per il telecontrollo degli oleodotti via satellite, nello standard ufficiale OASIS è oggi considerato un nome proprio e non più un acronimo, poiché non implementa code di messaggi in senso stretto." },
+      { term: "MTBF", full: "Mean Time Between Failures (Tempo Medio Tra i Guasti)", cat: "kpi", desc: "Indicatore di affidabilità che esprime l'intervallo medio di tempo trascorso tra due guasti consecutivi di un sistema riparabile." },
+      { term: "MTRS", full: "Mean Time To Restore (Tempo Medio di Ripristino)", cat: "kpi", desc: "Sinonimo rigoroso di Mean Time To Recovery, adottato in ambito normativo per distinguere l'intero tempo di ripristino del servizio dal solo tempo tecnico di riparazione." },
+      { term: "MTTF", full: "Mean Time To Failure (Tempo Medio al Guasto)", cat: "kpi", desc: "Tempo medio di funzionamento effettivo di un componente o sistema prima del verificarsi di un guasto (MTBF = MTTF + MTTR)." },
+      { term: "MTTR", full: "Mean Time To Repair / Mean Time To Restore (Recovery)", cat: "kpi", desc: "Indica sia il Tempo Medio di Riparazione (intervento tecnico attivo) sia il Tempo Medio di Ripristino completo del servizio.", note: "Eccezione terminologica: occorre sempre specificare nel contesto KPI se si intende il solo 'tempo di cacciavite' (Repair) o l'intero fermo produttivo (Restore/Recovery)." },
+      { term: "OdL", full: "Ordine di Lavoro", cat: "kpi", desc: "Documento digitale o cartaceo emesso dal CMMS che autorizza, pianifica e consuntiva un intervento di manutenzione." },
+      { term: "OEE", full: "Overall Equipment Effectiveness (Efficienza Generale dell'Impianto)", cat: "kpi", desc: "Indicatore percentuale sintetico (OEE = Disponibilità × Performance × Qualità) che misura l'efficienza produttiva reale di una macchina o linea." },
+      { term: "OPC UA", full: "Open Platform Communications Unified Architecture", cat: "reti", desc: "Protocollo industriale multipiattaforma sicuro per lo scambio dati strutturato tra OT e IT.", note: "Eccezione evolutiva: la sigla storica OPC indicava originariamente OLE for Process Control (legato a Microsoft Windows); con il passaggio all'architettura aperta l'acronimo è stato risemantizzato mantenendo invariata la sigla commerciale." },
+      { term: "OS", full: "Operating System (Sistema Operativo)", cat: "software", desc: "Software di base che gestisce le risorse hardware e software di un calcolatore, di un pannello operatore o di un controllore embedded." },
+      { term: "OSI", full: "Open Systems Interconnection (Interconnessione di Sistemi Aperti)", cat: "reti", desc: "Modello concettuale standardizzato dall'ISO che suddivide le comunicazioni di rete in 7 livelli funzionali." },
+      { term: "OT", full: "Operational Technology (Tecnologia Operativa)", cat: "software", desc: "Hardware e software dedicati al monitoraggio e al controllo diretto dei processi fisici e delle macchine in fabbrica (PLC, sensoristica, azionamenti, SCADA)." },
+      { term: "PAN", full: "Personal Area Network (Rete Personale)", cat: "reti", desc: "Rete a cortissimo raggio per la connessione di dispositivi attorno al singolo operatore (es. collegamenti Bluetooth tra sensori portatili e tablet diagnostico)." },
+      { term: "PC", full: "Personal Computer (Calcolatore Personale)", cat: "software", desc: "Elaboratore elettronico per uso individuale o postazione operatore/ufficio." },
+      { term: "PdM", full: "Predictive Maintenance (Manutenzione Predittiva)", cat: "kpi", desc: "Strategia manutentiva basata sul monitoraggio continuo delle condizioni reali dell'impianto e sulla previsione del degrado tramite analisi dati e Machine Learning." },
+      { term: "PLC", full: "Programmable Logic Controller (Controllore Logico Programmabile)", cat: "software", desc: "Computer industriale robusto progettato per gestire in tempo reale la logica di automazione e sicurezza delle macchine.", note: "Curiosità storica: introdotto alla fine degli anni Sessanta come PC (Programmable Controller), fu rinominato in PLC negli anni Ottanta per evitare confusione con la diffusione dei Personal Computer." },
+      { term: "RTU", full: "Remote Terminal Unit (Unità Terminale Remota)", cat: "reti", desc: "Dispositivo elettronico a microprocessore che interfaccia sensoristica e strumentazione di campo con sistemi di telecontrollo o broker IoT." },
+      { term: "RUL", full: "Remaining Useful Life (Vita Utile Residua)", cat: "kpi", desc: "Stima del tempo o dei cicli di funzionamento rimanenti prima che un componente raggiunga la soglia di guasto." },
+      { term: "SCADA", full: "Supervisory Control And Data Acquisition", cat: "software", desc: "Sistema software per il monitoraggio centralizzato, la visualizzazione sinottica e la gestione allarmi degli impianti industriali.", note: "Curiosità linguistica: a differenza di sigle pronunciate lettera per lettera (come PLC o HMI), è un acronimo lessicalizzato entrato nel gergo d'officina come parola autonoma ('scada')." },
+      { term: "SOA", full: "Service-Oriented Architecture (Architettura Orientata ai Servizi)", cat: "reti", desc: "Paradigma architetturale che permette a componenti software distribuiti di esporre e consumare funzionalità standardizzate attraverso la rete." },
+      { term: "SOAP", full: "Simple Object Access Protocol", cat: "reti", desc: "Protocollo standardizzato basato su XML per lo scambio di messaggi strutturati tra applicazioni tramite Web Services." },
+      { term: "TCP", full: "Transmission Control Protocol", cat: "reti", desc: "Protocollo di Livello 4 (Trasporto) che garantisce una comunicazione affidabile e orientata alla connessione sulle reti IP." },
+      { term: "TPM", full: "Total Productive Maintenance (Manutenzione Produttiva Totale)", cat: "kpi", desc: "Metodologia organizzativa di origine giapponese finalizzata a massimizzare l'OEE coinvolgendo attivamente anche gli operatori di produzione nella cura quotidiana degli impianti." },
+      { term: "TTR", full: "Time To Recovery (Tempo di Ripristino)", cat: "kpi", desc: "Intero intervallo di fermo dall'insorgere del guasto fino al ritorno della produzione a regime (inclusi notifica, diagnosi e logistica).", note: "Eccezione / Ambiguità: si distingue dal solo tempo tecnico di riparazione (Time To Repair – MTTR)." },
+      { term: "UNI", full: "Ente Italiano di Normazione", cat: "norme", desc: "Organismo nazionale che elabora, pubblica e diffonde le norme tecniche in Italia.", note: "Eccezione storica: l'ente ha aggiornato la propria denominazione ufficiale in Ente Italiano di Normazione, conservando però la sigla storica UNI risalente alla fondazione nel 1921 (Unificazione Nazionale nell'Industria, poi Ente Nazionale Italiano di Unificazione)." },
+      { term: "WAN", full: "Wide Area Network (Rete Geografica)", cat: "reti", desc: "Rete di telecomunicazioni estesa su scala geografica (regionale, nazionale o globale), impiegata per collegare stabilimenti remoti o servizi cloud." },
+      { term: "XML", full: "eXtensible Markup Language (Linguaggio di Marcatura Estensibile)", cat: "reti", desc: "Meta-linguaggio standardizzato per la rappresentazione e lo scambio strutturato di dati e modelli informativi.", note: "Curiosità grafica: la lettera iniziale 'X' sostituisce la 'E' di Extensible per richiamare foneticamente la prima sillaba (ex)." }
+    ];
+
+    const catLabels = {
+      kpi: "KPI & Manutenzione",
+      software: "Software & Automazione",
+      reti: "Reti & Protocolli",
+      norme: "Norme & Enti"
+    };
+
+    const glossGrid = document.getElementById('glossary-grid');
+    const glossSearch = document.getElementById('gloss-search');
+    const filterButtons = document.querySelectorAll('#gloss-filters .filter-pill');
+    let activeFilter = 'all';
+
+    function renderGlossary() {
+      const q = glossSearch.value.trim().toLowerCase();
+      const filtered = glossaryData.filter(item => {
+        const matchesCat =
+          activeFilter === 'all' ||
+          (activeFilter === 'curiosita' && Boolean(item.note)) ||
+          item.cat === activeFilter;
+        const matchesQuery =
+          !q ||
+          item.term.toLowerCase().includes(q) ||
+          item.full.toLowerCase().includes(q) ||
+          item.desc.toLowerCase().includes(q) ||
+          (item.note && item.note.toLowerCase().includes(q));
+        return matchesCat && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        glossGrid.innerHTML = '<p style="grid-column:1/-1; color:var(--text-muted);">Nessun acronimo trovato per la ricerca inserita.</p>';
+        return;
+      }
+
+      glossGrid.innerHTML = filtered.map(item => `
+        <article class="gloss-item">
+          <div class="gloss-term">
+            <span>${item.term}</span>
+            <span class="gloss-tag">${catLabels[item.cat]}</span>
+          </div>
+          <div class="gloss-full">${item.full}</div>
+          <div class="gloss-desc">${item.desc}</div>
+          ${item.note ? `<div class="gloss-note">${item.note}</div>` : ''}
+        </article>
+      `).join('');
+    }
+
+    glossSearch.addEventListener('input', renderGlossary);
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderGlossary();
+      });
+    });
+
+    renderGlossary();
+  </script>
+</body>
+</html>
